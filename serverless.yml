@@ -1,4 +1,4 @@
-service: serverless-rest-api-with-dynamodb
+service: serverless-deployment-v1
 
 frameworkVersion: ">=1.1.0 <2.0.0"
 
@@ -20,48 +20,48 @@ provider:
 
 functions:
   create:
-    handler: todos/create.create
+    handler: handlers/create.create
     events:
       - http:
-          path: todos
+          path: handlers
           method: post
           cors: true
 
   list:
-    handler: todos/list.list
+    handler: handlers/list.list
     events:
       - http:
-          path: todos
+          path: handlers
           method: get
           cors: true
 
   get:
-    handler: todos/get.get
+    handler: handlers/get.get
     events:
       - http:
-          path: todos/{id}
+          path: handlers/{id}
           method: get
           cors: true
 
   update:
-    handler: todos/update.update
+    handler: handlers/update.update
     events:
       - http:
-          path: todos/{id}
+          path: handlers/{id}
           method: put
           cors: true
 
   delete:
-    handler: todos/delete.delete
+    handler: handlers/delete.delete
     events:
       - http:
-          path: todos/{id}
+          path: handlers/{id}
           method: delete
           cors: true
 
 resources:
   Resources:
-    TodosDynamoDbTable:
+    handlersDynamoDbTable:
       Type: 'AWS::DynamoDB::Table'
       DeletionPolicy: Retain
       Properties:
