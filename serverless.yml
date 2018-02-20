@@ -1,6 +1,11 @@
-service: serverless-deployment-v1
+service: serverless-deployment-v9
 
 frameworkVersion: ">=1.1.0 <2.0.0"
+
+custom:
+  apigs3:
+    dist: web
+    topFiles: true
 
 provider:
   name: aws
@@ -10,12 +15,7 @@ provider:
   iamRoleStatements:
     - Effect: Allow
       Action:
-        - dynamodb:Query
-        - dynamodb:Scan
-        - dynamodb:GetItem
-        - dynamodb:PutItem
-        - dynamodb:UpdateItem
-        - dynamodb:DeleteItem
+        - dynamodb:*
       Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.DYNAMODB_TABLE}"
 
 functions:
@@ -39,25 +39,10 @@ functions:
     handler: handlers/get.get
     events:
       - http:
-          path: handlers/{id}
+          path: handlers/{id}/{location_id}
           method: get
           cors: true
 
-  update:
-    handler: handlers/update.update
-    events:
-      - http:
-          path: handlers/{id}
-          method: put
-          cors: true
-
-  delete:
-    handler: handlers/delete.delete
-    events:
-      - http:
-          path: handlers/{id}
-          method: delete
-          cors: true
 
 resources:
   Resources:
@@ -69,11 +54,20 @@ resources:
           -
             AttributeName: id
             AttributeType: S
+          -
+            AttributeName: location_id
+            AttributeType: N
         KeySchema:
           -
             AttributeName: id
             KeyType: HASH
+          -
+            AttributeName: location_id
+            KeyType: RANGE
         ProvisionedThroughput:
-          ReadCapacityUnits: 1
-          WriteCapacityUnits: 1
+          ReadCapacityUnits: 5
+          WriteCapacityUnits: 5
         TableName: ${self:provider.environment.DYNAMODB_TABLE}
+
+plugins:
+  - serverless-apig-s3

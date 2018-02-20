@@ -1,15 +1,16 @@
 import json
 import os
 
-from todos import decimalencoder
+from handlers import decimalencoder
 import boto3
+from boto3.dynamodb.conditions import Key, Attr
 dynamodb = boto3.resource('dynamodb')
 
 
 def list(event, context):
     table = dynamodb.Table(os.environ['DYNAMODB_TABLE'])
 
-    # fetch all todos from the database
+    # fetch all words from the database
     result = table.scan()
 
     # create a response
